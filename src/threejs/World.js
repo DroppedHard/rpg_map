@@ -5,17 +5,26 @@ import Resizer from './Resizer';
 export default class World {
     sceneObjects = {}
     constructor() { // setup
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        // this.camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);   // when I configure responsive design...
-        this.renderer = new THREE.WebGLRenderer();
-        const resizer = new Resizer(window, this.renderer, this.camera)
+        this.setupScene()
+        this.setupCamera()
+        this.setupRenderer()
+        this.resizer = new Resizer(window, this.renderer, this.camera)
         this.prepareScene()
+        this.startAnimation()
     }
-    prepareScene() {
+    setupScene() {
+        this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color('skyblue');
     }
-    initializeScene() {
+    setupCamera() {
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // this.camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);   // when I configure responsive design...
+    }
+    setupRenderer() {
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.physicallyCorrectLights = true;
+    }
+    prepareScene() {
         var cube = new Cube();
         this.sceneObjects["cube"] = cube;
         this.scene.add(cube.object);
