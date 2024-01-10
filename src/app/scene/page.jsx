@@ -1,5 +1,5 @@
 "use client"
-import Three from '@/Three'
+import Three from '@/threejs/Three'
 import React from 'react'
 
 const ScenePage = () => {
