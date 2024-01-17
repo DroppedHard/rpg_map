@@ -16,6 +16,7 @@ function Three() {
         var renderer = world.renderer
 
         refContainer.current && refContainer.current.appendChild(renderer.domElement);
+        world.start();
     }, []);
     return (
         <div ref={refContainer}></div>
