@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import Cube from './components/objects/cube';
-import Resizer from './Resizer';
-import createLights from './components/components/Light';
+import MeshGroup from './components/objects/MeshGroup';
+import Resizer from './systems/Resizer';
+import createLights from './components/overworld/Light';
 import Loop from './systems/Loop';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 export default class World {
     constructor() { // setup
@@ -11,8 +12,8 @@ export default class World {
         this.setupRenderer()
         this.resizer = new Resizer(window, this.renderer, this.camera)
         this.loop = new Loop(this.camera, this.scene, this.renderer)
-        this.prepareScene()
-        this.startAnimation()
+        this.createControls()
+        this.prepareSceneContent()
     }
     setupScene() {
         this.scene = new THREE.Scene();
@@ -24,25 +25,24 @@ export default class World {
         this.camera.position.z = 5;
     }
     setupRenderer() {
-        this.renderer = new THREE.WebGLRenderer({antialias: true});
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.physicallyCorrectLights = true;
     }
-    prepareScene() {
-        const cube = new Cube();
-        this.loop.updatables.push(cube);
-        
-        const light = createLights();
-        this.scene.add(light, cube.mesh)
+    createControls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+        this.controls.enableDamping = true
+        this.controls.tick = () => this.controls.update()
+        this.loop.updatables.push(this.controls)
+        this.controls.addEventListener('change', () => this.render())
+        // this.controls.autoRotate = true
+        // this.controls.autoRotateSpeed = 1
     }
-    startAnimation() {
-        // var cube = this.sceneObjects.cube.mesh;
-        // const animate = () => {
-        //     requestAnimationFrame(animate);
-        //     cube.rotation.x += 0.01;
-        //     cube.rotation.y += 0.01;
-        //     this.render()
-        // };
-        // animate();
+    prepareSceneContent() {
+        const group = new MeshGroup();
+        this.loop.updatables.push(group);
+
+        const {light, ambientLight} = createLights();
+        this.scene.add(light, ambientLight, group.getMesh())
     }
     render() {
         this.renderer.render(this.scene, this.camera);
